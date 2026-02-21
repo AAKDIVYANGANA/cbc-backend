@@ -1,40 +1,40 @@
-import e from "express";
 import mongoose from "mongoose";
+
 const userSchema = mongoose.Schema({
-    email : {
-        type: String, 
+    email: {
+        type: String,
         required: true,
         unique: true
     },
-    firstname : {
+    firstname: {
         type: String,
         required: true
     },
-    lastname : {
+    lastname: {
         type: String,
         required: true
     },
-    role : {
+    role: {
         type: String,
-        required: true,
         default: "user"
     },
-    password : {
+    password: {
         type: String,
         required: true
-    },  
-    phone : {
+    },
+    phone: {
         type: String,
         default: "Not given"
     },
-    isDissabled : {
+    isDissabled: {
         type: Boolean,
         default: false
     },
-    isEmailVerified : {
+    isEmailVerified: {
         type: Boolean,
         default: false
     },
 });
+
 const User = mongoose.model("User", userSchema);
 export default User;

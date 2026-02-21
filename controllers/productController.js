@@ -1,104 +1,94 @@
-import { response } from 'express';
 import Product from '../models/product.js';
 
 export async function createProduct(req, res) {
-    if(req.user == null) {
-        res.status(403).json({
+    if (req.user == null) {
+        return res.status(403).json({
             message: "You need to login first"
-        })
-        return;
+        });
     }
-    if(req.user.role !== "admin") {
-        res.status(403).json({
+    if (req.user.role !== "admin") {
+        return res.status(403).json({
             message: "You are not authorized to create a product"
-        })
-        return;
+        });
     }
-    const product = new Product(req.body);
-    try{
-        await product.save()
-        res.json({
+    try {
+        const product = new Product(req.body);
+        await product.save();
+        res.status(201).json({
             message: "Product saved successfully"
-        })
-    }catch(err){
+        });
+    } catch (err) {
+        console.error("❌ Create product error:", err);
         res.status(500).json({
-            message: "Product not created"
-        })
+            message: "Product not created",
+            error: err.message
+        });
     }
 }
 
 export async function getProducts(req, res) {
-    try{
+    try {
         const products = await Product.find();
-        res.json(products);
-    }catch(err){
+        res.status(200).json(products);
+    } catch (err) {
+        console.error("❌ Get products error:", err);
         res.status(500).json({
-            message: "Products not found"
-        })
+            message: "Products not found",
+            error: err.message
+        });
     }
 }
 
-export function deleteProduct(req, res) {
-    if(req.user == null) {
-        res.status(403).json({
+export async function deleteProduct(req, res) {
+    if (req.user == null) {
+        return res.status(403).json({
             message: "You need to login first"
-        })
-        return;
-    }   
-
-    if(req.user.role !== "admin") {
-        res.status(403).json({
+        });
+    }
+    if (req.user.role !== "admin") {
+        return res.status(403).json({
             message: "You are not authorized to delete a product"
-        })
-        return;
+        });
     }
-
-    Product.findOneAndDelete({
-        productId : req.params.productId
-    }).then(
-        () => {
-            res.json({
-                message: "Product deleted successfully"
-            });
-        }
-    ).catch(
-        (err) => {
-            res.status(500).json({
-                message: "Product not deleted",
-            })
-        }
-    )
-    
+    try {
+        await Product.findOneAndDelete({ productId: req.params.productId });
+        res.status(200).json({
+            message: "Product deleted successfully"
+        });
+    } catch (err) {
+        console.error("❌ Delete product error:", err);
+        res.status(500).json({
+            message: "Product not deleted",
+            error: err.message
+        });
+    }
 }
 
-export function updateProduct(req, res) {
-    if(req.user == null) {
-        res.status(403).json({
+export async function updateProduct(req, res) {
+    if (req.user == null) {
+        return res.status(403).json({
             message: "You need to login first"
-        })
-        return;
+        });
     }
-    if(req.user.role !== "admin") {
-        res.status(403).json({
+    if (req.user.role !== "admin") {
+        return res.status(403).json({
             message: "You are not authorized to update a product"
-        })
-        return;
+        });
     }
-    Product.findOneAndUpdate({
-         productId : req.params.productId 
-        },req.body).then(
-        () => {
-            res.json({
-                message: "Product updated successfully"
-            });
-        }
-    ).catch(
-        (err) => {
-            res.status(500).json({
-                message: "Product not updated",
-            })
-        }
-    )
+    try {
+        await Product.findOneAndUpdate(
+            { productId: req.params.productId },
+            req.body,
+            { new: true }
+        );
+        res.status(200).json({
+            message: "Product updated successfully"
+        });
+    } catch (err) {
+        console.error("❌ Update product error:", err);
+        res.status(500).json({
+            message: "Product not updated",
+            error: err.message
+        });
+    }
 }
-    
-

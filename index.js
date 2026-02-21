@@ -1,77 +1,39 @@
-import express from 'express';
-import bodyParser from 'body-parser';
-import mongoose from 'mongoose';
-import userRouter from './routes/userRouter.js';
-import productRouter from './routes/productRouter.js';
-import verifyJWT from './middleware/auth.js';
-import orderRouter from './routes/orderRouter.js';
-import dotenv from 'dotenv';
+import express from "express";
+import mongoose from "mongoose";
+import dotenv from "dotenv";
+import cors from "cors";
+import userRouter from "./routes/userRouter.js";
+import productRouter from "./routes/productRouter.js";
+
 dotenv.config();
 
-let app = express();
+const app = express();
+app.use(cors());
+app.use(express.json());
 
-//mongodb+srv://admin:123@cluster0.cr6voab.mongodb.net/?appName=Cluster0
-mongoose.connect(process.env.MONGO_URL).then(
-    ()=>{
-        console.log("Connected to the database");
-    }
-).catch(
-    ()=>{
-    console.log("Connection failed");
-    }
-)
+// Debug logger
+app.use((req, res, next) => {
+    console.log(`📨 ${req.method} ${req.url}`);
+    next();
+});
 
-app.use(bodyParser.json());
-app.use(verifyJWT)
-    
+async function startServer() {
+    try {
+        console.log("Trying to connect to MongoDB...");
+        await mongoose.connect(process.env.MONGO_URL);
+        console.log("✅ Connected to MongoDB");
 
+        // Routes
+        app.use("/api/user", userRouter);
+        app.use("/api/product", productRouter);
 
-app.use("/api/user", userRouter);
-app.use("/api/product", productRouter);
-app.use("/api/order", orderRouter);
-
-app.get("/",
-    (req,res)=>{
-        console.log(req.body)
-        console.log("Get request received");
-        res.json({
-            message : "Hello World"
+        app.listen(process.env.PORT || 3000, () => {
+            console.log("🚀 Server running on port", process.env.PORT || 3000);
         });
+    } catch (error) {
+        console.error("❌ MongoDB CONNECTION ERROR:", error);
+        process.exit(1);
     }
-)
-
-app.post("/",
-    (req,res)=>{
-        console.log(req.body)
-        console.log("Post request received");
-        res.json({
-            message : "This is a post request"
-        });
-    }
-)
-
-app.delete("/",
-    (req,res)=>{
-        console.log(req.body)
-        console.log("Delete request received");
-        res.json({
-            message : "This is a delete request"
-        });
-    }
-)
-
-app.put("/",
-    (req,res)=>{
-        console.log(req.body)
-        console.log("Put request received");
-        res.json({
-            message : "This is a put request"
-        });
-    }
-)
-
-app.listen(3000,
-    ()=>{
-    console.log("Server is running on port 3000");
 }
-)
+
+startServer();
