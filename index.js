@@ -4,6 +4,7 @@ import dotenv from "dotenv";
 import cors from "cors";
 import userRouter from "./routes/userRouter.js";
 import productRouter from "./routes/productRouter.js";
+import orderRouter from "./routes/orderRouter.js"; // ✅ add this
 
 dotenv.config();
 
@@ -26,6 +27,7 @@ async function startServer() {
         // Routes
         app.use("/api/user", userRouter);
         app.use("/api/product", productRouter);
+        app.use("/api/order", orderRouter); // ✅ add this
 
         app.listen(process.env.PORT || 3000, () => {
             console.log("🚀 Server running on port", process.env.PORT || 3000);

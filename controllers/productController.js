@@ -38,6 +38,20 @@ export async function getProducts(req, res) {
         });
     }
 }
+export async function getProductById(req, res) {
+    const productId = req.params.id
+    console.log(productId)
+    const product = await Product.findOne({ productId: productId });
+    if(product==null){
+        res.status(404).json({
+            message: "Product not found"
+        })
+        return
+    }
+    res.json({
+        product: product
+    })
+}
 
 export async function deleteProduct(req, res) {
     if (req.user == null) {

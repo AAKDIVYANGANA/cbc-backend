@@ -1,10 +1,10 @@
 import express from "express";
 import { createOrder, getOrders } from "../controllers/orderController.js";
-import { get } from "mongoose";
+import verifyJWT from "../middleware/auth.js"; // ✅ add middleware
 
 const orderRouter = express.Router();
 
-orderRouter.post("/", createOrder);
-orderRouter.get("/", getOrders);
+orderRouter.post("/", verifyJWT, createOrder);   // ✅ add verifyJWT
+orderRouter.get("/", verifyJWT, getOrders);      // ✅ add verifyJWT
 
 export default orderRouter;
