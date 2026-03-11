@@ -1,12 +1,9 @@
 import Order from "../models/order.js";
-import Product from "../models/product.js"; // ✅ missing import
+import Product from "../models/product.js";
 
 export async function createOrder(req, res) {
-
     if (req.user == null) {
-        return res.status(401).json({
-            message: "Unauthorized"
-        });
+        return res.status(401).json({ message: "Unauthorized" });
     }
 
     const body = req.body;
@@ -21,7 +18,6 @@ export async function createOrder(req, res) {
     };
 
     try {
-        // Generate order ID
         const lastBills = await Order.find().sort({ date: -1 }).limit(1);
         if (lastBills.length == 0) {
             orderData.orderId = "ORD0001";
@@ -34,7 +30,6 @@ export async function createOrder(req, res) {
             orderData.orderId = "ORD" + newOrderNumberStr;
         }
 
-        // Build bill items
         for (let i = 0; i < body.billItems.length; i++) {
             const product = await Product.findOne({ productId: body.billItems[i].productId });
             if (product == null) {
@@ -54,24 +49,17 @@ export async function createOrder(req, res) {
 
         const order = new Order(orderData);
         await order.save();
-        res.status(201).json({
-            message: "Order saved successfully"
-        });
+        res.status(201).json({ message: "Order saved successfully" });
 
     } catch (err) {
         console.error(err);
-        res.status(500).json({
-            message: "Order not saved",
-            error: err.message
-        });
+        res.status(500).json({ message: "Order not saved", error: err.message });
     }
 }
 
 export async function getOrders(req, res) {
     if (req.user == null) {
-        return res.status(401).json({
-            message: "Unauthorized"
-        });
+        return res.status(401).json({ message: "Unauthorized" });
     }
 
     try {
@@ -84,9 +72,30 @@ export async function getOrders(req, res) {
         res.status(200).json(orders);
     } catch (err) {
         console.error(err);
-        res.status(500).json({
-            message: "Orders not found",
-            error: err.message
-        });
+        res.status(500).json({ message: "Orders not found", error: err.message });
+    }
+}
+
+export async function updateOrder(req, res) {
+    try {
+        if (req.user == null) {
+            return res.status(401).json({ message: "Unauthorized" }); // ✅ fix 2: req.status -> res.status
+        }
+
+        if (req.user.role != "admin") {
+            return res.status(403).json({ message: "You are not authorized to update an order" });
+        }
+
+        const orderId = req.params.orderId;
+        await Order.findOneAndUpdate(
+            { orderId: orderId },
+            { status: req.body.status } 
+        );
+
+        res.status(200).json({ message: "Order updated successfully" });
+
+    } catch (err) {
+        console.error(err);
+        res.status(500).json({ message: "Order not updated", error: err.message });
     }
 }
