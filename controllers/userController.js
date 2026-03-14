@@ -1,7 +1,7 @@
 import User from '../models/User.js';
 import bcrypt from 'bcrypt';
 import jwt from 'jsonwebtoken';
-import axios from 'axios'; // ✅ add this
+import axios from 'axios';
 
 // ================= SAVE USER =================
 export async function saveUser(req, res) {
@@ -99,7 +99,7 @@ export async function loginUser(req, res) {
 }
 
 // ================= GOOGLE LOGIN =================
-export async function googleLogin(req, res) { // ✅ added export
+export async function googleLogin(req, res) {
     const accessToken = req.body.accessToken;
 
     if (!accessToken) {
@@ -107,35 +107,28 @@ export async function googleLogin(req, res) { // ✅ added export
     }
 
     try {
-        // ✅ Get user info from Google
         const response = await axios.get("https://www.googleapis.com/oauth2/v3/userinfo", {
-            headers: {
-                Authorization: "Bearer " + accessToken
-            }
+            headers: { Authorization: "Bearer " + accessToken }
         });
 
         const googleUser = response.data;
-        console.log("Google user info:", googleUser);
 
-        // ✅ Check if user already exists
         let user = await User.findOne({ email: googleUser.email });
 
-        // ✅ If not, create new user
         if (!user) {
             user = new User({
                 email: googleUser.email,
                 firstname: googleUser.given_name || "Google",
                 lastname: googleUser.family_name || "User",
-                password: await bcrypt.hash(googleUser.sub, 10), // use google ID as password
+                password: await bcrypt.hash(googleUser.sub, 10),
                 role: "user",
                 phone: "Not given",
                 isDissabled: false,
-                isEmailVerified: true, // google accounts are verified
+                isEmailVerified: true,
             });
             await user.save();
         }
 
-        // ✅ Sign JWT and return token
         const userData = {
             id: user._id,
             email: user.email,
@@ -158,5 +151,30 @@ export async function googleLogin(req, res) { // ✅ added export
     } catch (error) {
         console.error("❌ Google login error:", error);
         res.status(500).json({ message: "Google login failed", error: error.message });
+    }
+}
+
+// ================= GET CURRENT USER =================
+export async function getCurrentUser(req, res) {
+    if (req.user == null) {
+        return res.status(403).json({ message: "Please login to get user details" });
+    }
+    try {
+        const user = await User.findById(req.user.id);
+        if (!user) {
+            return res.status(404).json({ message: "User not found" });
+        }
+        res.status(200).json({
+            user: {
+                email: user.email,
+                firstname: user.firstname,
+                lastname: user.lastname,
+                role: user.role,
+                phone: user.phone,
+            }
+        });
+    } catch (error) {
+        console.error("❌ Get current user error:", error);
+        res.status(500).json({ message: "Internal Server Error", error: error.message });
     }
 }
