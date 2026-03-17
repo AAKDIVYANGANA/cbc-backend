@@ -106,3 +106,19 @@ export async function updateProduct(req, res) {
         });
     }
 }
+export async function searchProducts(req, res) {
+    const search = req.query.search || "";
+    try {
+        const products = await Product.find(
+            search.trim() === "" ? {} : {
+                $or: [
+                    { name: { $regex: search, $options: "i" } },
+                    { altNames: { $elemMatch: { $regex: search, $options: "i" } } },
+                ],
+            }
+        );
+        res.json(products); // return plain array, not { products: [...] }
+    } catch (err) {
+        res.status(500).json({ message: "Error searching products" });
+    }
+}
