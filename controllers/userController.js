@@ -178,3 +178,56 @@ export async function getCurrentUser(req, res) {
         res.status(500).json({ message: "Internal Server Error", error: error.message });
     }
 }
+
+// ================= GET ALL USERS (admin only) =================
+export async function getAllUsers(req, res) {
+    try {
+        if (req.user.role !== "admin") {
+            return res.status(403).json({ message: "Access denied. Admins only." });
+        }
+        const users = await User.find().select("-password");
+        res.status(200).json(users);
+    } catch (error) {
+        console.error("❌ Get all users error:", error);
+        res.status(500).json({ message: "Failed to get users", error: error.message });
+    }
+}
+
+// ================= UPDATE USER ROLE (admin only) =================
+export async function updateUserRole(req, res) {
+    try {
+        if (req.user.role !== "admin") {
+            return res.status(403).json({ message: "Access denied. Admins only." });
+        }
+        const { role } = req.body;
+        const user = await User.findByIdAndUpdate(
+            req.params.id,
+            { role },
+            { new: true }
+        ).select("-password");
+        if (!user) {
+            return res.status(404).json({ message: "User not found" });
+        }
+        res.status(200).json({ message: "Role updated successfully", user });
+    } catch (error) {
+        console.error("❌ Update role error:", error);
+        res.status(500).json({ message: "Failed to update role", error: error.message });
+    }
+}
+
+// ================= DELETE USER (admin only) =================
+export async function deleteUser(req, res) {
+    try {
+        if (req.user.role !== "admin") {
+            return res.status(403).json({ message: "Access denied. Admins only." });
+        }
+        const user = await User.findByIdAndDelete(req.params.id);
+        if (!user) {
+            return res.status(404).json({ message: "User not found" });
+        }
+        res.status(200).json({ message: "User deleted successfully" });
+    } catch (error) {
+        console.error("❌ Delete user error:", error);
+        res.status(500).json({ message: "Failed to delete user", error: error.message });
+    }
+}
