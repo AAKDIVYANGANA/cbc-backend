@@ -79,7 +79,7 @@ export async function getOrders(req, res) {
 export async function updateOrder(req, res) {
     try {
         if (req.user == null) {
-            return res.status(401).json({ message: "Unauthorized" }); // ✅ fix 2: req.status -> res.status
+            return res.status(401).json({ message: "Unauthorized" }); 
         }
 
         if (req.user.role != "admin") {

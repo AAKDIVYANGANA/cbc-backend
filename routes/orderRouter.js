@@ -6,6 +6,6 @@ const orderRouter = express.Router();
 
 orderRouter.post("/", verifyJWT, createOrder);
 orderRouter.get("/", verifyJWT, getOrders);
-orderRouter.put("/:orderId", verifyJWT, updateOrder); // ✅ fix 1: GET -> PUT, added verifyJWT
+orderRouter.put("/:orderId", verifyJWT, updateOrder); 
 
 export default orderRouter;

@@ -3,7 +3,7 @@ import bcrypt from 'bcrypt';
 import jwt from 'jsonwebtoken';
 import axios from 'axios';
 
-// ================= SAVE USER =================
+
 export async function saveUser(req, res) {
     try {
         const { email, password, firstName, lastName, role, phone } = req.body;
@@ -45,7 +45,7 @@ export async function saveUser(req, res) {
     }
 }
 
-// ================= LOGIN USER =================
+
 export async function loginUser(req, res) {
     try {
         const { email, password } = req.body;
@@ -98,7 +98,7 @@ export async function loginUser(req, res) {
     }
 }
 
-// ================= GOOGLE LOGIN =================
+//GOOGLE LOGIN 
 export async function googleLogin(req, res) {
     const accessToken = req.body.accessToken;
 
@@ -154,7 +154,7 @@ export async function googleLogin(req, res) {
     }
 }
 
-// ================= GET CURRENT USER =================
+
 export async function getCurrentUser(req, res) {
     if (req.user == null) {
         return res.status(403).json({ message: "Please login to get user details" });
@@ -179,7 +179,7 @@ export async function getCurrentUser(req, res) {
     }
 }
 
-// ================= GET ALL USERS (admin only) =================
+//GET ALL USERS (admin only) 
 export async function getAllUsers(req, res) {
     try {
         if (req.user.role !== "admin") {
@@ -193,7 +193,7 @@ export async function getAllUsers(req, res) {
     }
 }
 
-// ================= UPDATE USER ROLE (admin only) =================
+
 export async function updateUserRole(req, res) {
     try {
         if (req.user.role !== "admin") {
@@ -215,7 +215,7 @@ export async function updateUserRole(req, res) {
     }
 }
 
-// ================= DELETE USER (admin only) =================
+
 export async function deleteUser(req, res) {
     try {
         if (req.user.role !== "admin") {

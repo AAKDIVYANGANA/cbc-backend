@@ -4,7 +4,7 @@ import dotenv from "dotenv";
 import cors from "cors";
 import userRouter from "./routes/userRouter.js";
 import productRouter from "./routes/productRouter.js";
-import orderRouter from "./routes/orderRouter.js"; // ✅ add this
+import orderRouter from "./routes/orderRouter.js"; 
 
 dotenv.config();
 
@@ -12,7 +12,7 @@ const app = express();
 app.use(cors());
 app.use(express.json());
 
-// Debug logger
+
 app.use((req, res, next) => {
     console.log(`📨 ${req.method} ${req.url}`);
     next();
@@ -27,7 +27,7 @@ async function startServer() {
         // Routes
         app.use("/api/user", userRouter);
         app.use("/api/product", productRouter);
-        app.use("/api/order", orderRouter); // ✅ add this
+        app.use("/api/order", orderRouter); 
 
         app.listen(process.env.PORT || 3000, () => {
             console.log("🚀 Server running on port", process.env.PORT || 3000);

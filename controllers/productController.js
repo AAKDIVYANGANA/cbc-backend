@@ -117,7 +117,7 @@ export async function searchProducts(req, res) {
                 ],
             }
         );
-        res.json(products); // return plain array, not { products: [...] }
+        res.json(products); 
     } catch (err) {
         res.status(500).json({ message: "Error searching products" });
     }

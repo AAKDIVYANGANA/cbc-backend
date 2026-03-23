@@ -16,8 +16,8 @@ userRouter.post("/", saveUser);
 userRouter.post("/login", loginUser);
 userRouter.post("/google", googleLogin);
 userRouter.get("/current", verifyJWT, getCurrentUser);
-userRouter.get("/all", verifyJWT, getAllUsers);           // ← get all users
-userRouter.put("/:id", verifyJWT, updateUserRole);        // ← update role
-userRouter.delete("/:id", verifyJWT, deleteUser);         // ← delete user
+userRouter.get("/all", verifyJWT, getAllUsers);           
+userRouter.put("/:id", verifyJWT, updateUserRole);        
+userRouter.delete("/:id", verifyJWT, deleteUser);         
 
 export default userRouter;
