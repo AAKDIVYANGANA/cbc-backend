@@ -38,4 +38,4 @@ It provides RESTful APIs for authentication, product management, cart handling, 
 
 This backend was developed to support a full-stack e-commerce system, with a focus on scalable API design, secure authentication, and efficient data handling using MongoDB.
 
-## 📂 Project Structure
+
